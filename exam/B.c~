@@ -1,0 +1,10 @@
+#include <stdio.h>
+
+int main(){
+  int i;
+  int n[20000];
+  int sum=0;
+
+
+  return 0;
+}

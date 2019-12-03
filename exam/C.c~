@@ -1,0 +1,32 @@
+#include <stdio.h>
+
+#define MAX 1000000
+
+int main(){
+  int a[MAX];
+  int i,j,k;
+  int key;
+
+  for(i=0; i<MAX; i++){
+    scanf("%d",&a[i]);
+  }
+
+  for(i=0; i<MAX-1; i++){
+    for(j=i-1; j>i; j--){
+      if(a[j]<a[j+1]){
+	key=a[j];
+	a[j]=a[j+1];
+	a[j+1]=key;
+      }
+    }
+  }
+
+  /*
+  for(i=0; i<1000; i++){
+    printf("a[%d]:%d\n",i,a[i]);
+  }
+  */
+  printf("%d\n",a[999]);
+  
+  return 0;
+}

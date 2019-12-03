@@ -1,0 +1,111 @@
+アルゴリズムとデータ構造　9回目
+
+ヒープ
+ソートよりかはデータ構造の話
+
+＊完全二分木
+子供があるときは必ず2つ
+葉の深さは等しい
+＊おおよそ完全二分木
+子供はあったりなかったり
+葉の深さは±1
+
+物理構造は1つの1次元配列
+実際にデータだが入っているサイズ->ヒープ
+確保しているメモリと実際に使用しているメモリ量は違う
+使っていないメモリが存在する
+構造は木だが、配列は1次元[スライド５]
+便宜上ヒープは1オリジンから
+あるノードについて、親や子供の関係が分かりやすい[スライド６]
+それぞれの添え字を・・・
+＊親は1/2
+＊左の子は2倍
+＊右ノ子は2倍＋１
+ヒープ条件(heap propety)
+親子関係のみに大小関係を見る(二分探索木条件とちがうところ)
+兄弟の大小関係は見ない
+max-heap
+min-heap
+[スライド9,10]
+＊max-heap
+最大値がルート
+＊min-heap
+親は自分以下
+子は自分以上
+
+新しい値が入ったときに、ヒープ条件を満たすように値を入れ替える作業が必要
+MaxHeapify(ダウンヒープ)[スライド１２]
+左右の子を見て「大きいほう」の子を持ち上げる
+の繰り返し
+値が条件を満たすまで繰り返す
+maxHeapify(A, i)//i->今見ているノード
+  l = left(i)
+  r = right(i)
+  //largest->子の最大値
+  if l <= A.heap_size and A[l] > A[i]//ヒープサイズ内で条件を満たすとき
+    largest = l
+  else
+    largest = i
+  if r <= A.heap_size and A[r] > A[largest]//右も同様にみる
+    largest = r
+  if largest != i
+    exchange A[i] and A[largest]
+    maxHeapify(A, largest)
+計算量：O(logn)
+
+Building heap
+単なる配列からヒープを構築できる
+ヒープサイズを2で割って切り捨てると、子を持つ最後のノードが分かる
+最後の子のノードを起点としてヒープを構築できる
+ヒープサイズ＝配列サイズ（1オリジン）
+buildMaxHeap(A)
+  A.heap_size = A.length
+  for i = floor(A.length/2) down to 1
+    maxHeapify(A, i)
+計算量：O(n)->つまりは効率がいい
+
+Priority Queues
+値を入れる
+最大値を読む
+最小値を取り出して削除
+補助関数としてincreaseKeyを導入
+初期化はBuild heapでヒープ構築
+
+＊HeapMaximun（ヒープの中で最大値を返す）
+ヒープのルートを返せばよい
+heapMaximum(A)
+return A[1]
+＊HeapExtractMax
+最大値を取り出して削除
+heapExtractMax(A)
+  if A.heap_size < 1
+    output error "heap underflow"
+  max = A[1]
+  A[1] = A[A.heap_size]<-一番最後の値を上に持ってくる
+  A.heap_size--<-サイズを減らす
+  maxHeapify(A, 1)<-再構築、ヒープ条件が崩れているため
+  return max<-最大値を返す
+  [スライド19]
+＊MaxHeapInsert(新しいデータを入れる)
+いろいろめんどい
+maxHeapInsert(A, key)
+  A.heap_size = A.heap_size + 1ｰ>ヒープサイズを増やす
+  A[A.heap_size] = -INF//負の無限大
+  heapIncreaseKey(A, A.heap_size, key)->指定したノードの値を増やす
+＊HeapIncreaseKey->増やすことしか許さない
+heapIncreaseKey(A, i, key)
+  if key < A[i]//keyが増やすべき値ではないときはエラー
+    output error "new key is smaller than current key"
+  A[i] = key
+  while i > 1 and A[parent(i)] < A[i]//親の値が小さければヒープ条件を崩しているので修正
+    exchange A[i] and A[parent(i)]
+    i = parent(i)
+＊Heap Sort
+ヒープの仕組みを利用した高等テク
+階層の深いほうに大きい値を入れていく
+heapsort(A)
+  buildMaxHeap(A)//ヒープを作るとルートが最大値が自明
+  for i = A.length down to 2
+    exchange A[1] and A[i]
+    A.heap_size--
+    maxHeapify(A, 1)

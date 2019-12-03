@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 36
+
+void Bubble(int *);
+
+int n;//要素数は外部変数
+
+int main(){
+  int a[MAX];
+  char c[MAX];
+  int i,j,k;
+  int key,key_c,turn=0;
+
+  scanf("%d",&n);//要素数の読取り
+  for(i=0; i<n; i++){
+    scanf("%c%d",&c[i],&a[i]);//要素の読取り
+  }
+  for(i=0; i<n-1; i++){//バブルソート本体
+    for(j=n-1; j>i; j--){
+      if(a[j]<a[j-1]){
+	key=a[j];
+	key_c = c[j];
+	a[j]=a[j-1];
+	c[j]=c[j-1];
+	a[j-1]=key;
+	c[j-1]=key_c;
+	//turn++;
+      }
+    }
+  }
+
+  //以下アウトプット部分
+  for(i=0; i<n; i++){
+    printf("%c(%d)",c[i],a[i]);
+    if(i!=n-1)printf(" ");
+  }
+  printf("\n");
+  return 0;
+}

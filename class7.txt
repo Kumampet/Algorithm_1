@@ -1,0 +1,82 @@
+アルゴリズムとデータ構造　7回目
+
+ツリー構造
+リンクドリストはO(n)->速さ面で問題がある
+ツリー構造を使えば早くなる
+
+ツリーの定義
+G=(V,E)->グラフ
+V(Vertex)->ある対象
+E(Edge)->エッジ
+対象同士をエッジで結ぶ
+グラフがある性質を持つと木構造になる
+
+グラフが木構造である定義
+1:自由木
+2:グラフの中の任意の2点はたった1通りしかない
+3:任意の2点を選ぶと必ずたどり着ける。また、どこか1本エッジを消すとたどり着けなくなる。
+4:Vの数とEの数が|E|=|V|-1になってる。
+5:Gが経路を持たない(どこかに循環するEがない)
+6:
+
+ルーテッドツリー
+木構造の場合Ｖをノードと呼ぶことがある
+Rooted=根
+Rootは一番上にくる
+自分より上に向かうとParent(親)
+自分より下に向かうものをChild(子)
+一番下をLeaf(葉)
+Leaf以外はInternal Node(内部ノード)
+同じ階層(Depth)にあうものは兄弟
+自分自身を含む以下の階層を子孫(Descendant)
+自分自身を含む以上の階層の先祖(Ancestor)
+それぞれ自分自身を含まないと「真の」～になる(Proper~)
+xの次数->子の数
+xの高さ->その子孫の最下層から見たxのdepth
+
+順序木(Odered Trees)
+子供に順番がある
+子の順番が同じでも並び方が違うと違うものとみなす
+
+バイナリツリー(二分木)
+ノードを全く持たない
+3つの要素からなる
+親と二つの子供が再帰的に呼ばれるツリー
+子供を1個持つか2個持つか
+左の子、右の子が違うと違う木構造
+左右を区別する
+子供が存在するか区別する
+
+実装について
+要素がない->NIL
+必ず要素を持つように書く->なければNIL
+親は必ず二つのポインタを持つ
+
+Tree walk(訪問)
+Preoder
+Root->left child->right child
+preParse(u)
+  if u == NIL
+    return
+  print u
+  preParse(T[u].left)
+  preParse(T[u].right)
+Inorder Tree Walk
+left subtree->root->right subtree
+inParse(u)
+  if u == NIL
+    return
+  inParse(T[u].left)
+  print u
+  inParse(T[u].right)
+Postorder Tree walk
+left subtree->right subtree->root
+postParse(u)
+  if u == NIL
+    return
+  postParse(T[u].left)
+  postParse(T[u].right)
+  print u
+
+Tree(静的)n:node数
+Binary Search Tree(動的)node数などが変わる

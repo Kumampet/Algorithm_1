@@ -1,0 +1,148 @@
+アルゴリズムとデータ構造　12回目
+
+problem1(重み付きグラフ)
+点があります
+点はコンピューターです
+相互にネットワークでつなぎたい
+ネットワークケーブルは高価
+なるべく短い距離で結びたい
+どうしたらよいか？
+problem2(ショーテストパスツリー)
+分岐点と道がある
+道には距離がある
+最短で目的地まで行く経路を算出したい
+
+要素の関係性はリストで表す方法と行列で表す方法がある
+行列で作るとき、エッジが存在しないところには無限大にする
+エッジがあるときはそのエッジの重みを入れる。
+
+リストで表す
+接続先のノードの番号とそのエッジの重みを含ませて結ぶ
+グラフを使ったプログラムは圧倒的リストを使ったほうが効率的
+
+全域木
+あるグラフから可能な限りエッジを取り除いた木
+ただし、孤立するバーテックスがあってはいけない
+エッジの取り方はいくつか通りがある
+＊Minimum Spanning Tree(MST)
+選んだエッジ(残った)の総和が最小になる全域木
+求め方
+genericという表現を使う
+genericアルゴリズムを使う
+アルゴリズムのステップでノードを１つづつ足していく
+genericMST(G, w)
+  T = empty//ノードの集合
+  while T does not form a spanning tree//TがSTに達していない間
+    find an edge (u, v) that is safe for T//Tにとって安全なエッジを選ぶ
+    T = T ∪ {(u, v)}
+  return T
+安全なエッジとは
+ループを作らないエッジを選ぶこと
+つまりgenericアルゴリズムはループを作らないエッジを選択していくアルゴリズム(プリムのアルゴリズム)
+最終的なコスト(重みの総和)は同じ値になる
+genericの大切なこと->必ず選択していくTはMSTのサブセットになる
+[スライド13]
+起点を選ぶ
+黒くなっているところはTに含まれる
+黒のグループから伸びているエッジで重みが小さいもの(最小値)を選択する
+過去に選択したTから伸びているエッジも選択対象になる。<-ここ重要
+同値のエッジがある場合はどちらを選んでも同じ
+選択できるものがなくなったら終了
+
+どうやったら効率的な実装ができるか
+毎回すべてのエッジを探索したら時間がかかる
+各ノードに対してあるコストを持っておく
+選択対象にあるノードにはその各ノードに伸びるエッジの最小値を持っておく
+[スライド24]
+初期ではすべて無限大の初期値
+プリムのアルゴリズムを使ってMSTを求める
+選ばれたノードにあるコストを更新[スライド25]
+Tに入っているノードに伸びているエッジにつながっているノードのコストを更新していく感じ
+以降繰り返し
+つまりノードに入るコストは逐次更新される可能性がある
+計算量はO(|V^2|)
+prim(G, w, r)
+  for each u in G
+    d[u] = inf
+    pi[u] = NIL//親ノードが入る
+    color[u] = WHITE
+  d[r] = 0
+  while true
+    mincost = inf
+    for each i in G
+      if color[i] != BLACK and d[i] < mincost
+        mincost = d[i]
+        u = i
+
+    if mincost == inf
+      break
+
+    color[u] = BLACK
+
+    for each v in Adj[u]//隣接行列だったりリストだったり
+      if color[v] != BLACK and w(u, v) < d[v]
+        pi[v] = u
+        d[v] = w(u, v)
+計算効率は悪い
+軽量化するとこうなる
+ヒープを使う
+O((|V|+|E|)log|V|)
+prim(G, w, r)
+  for each u in G
+    d[u] = inf
+    pi[u] = NIL
+  d[r] = 0
+  H = buildMinHeap(V)
+  while H is not empty
+    u = H.extractMin()
+    color[u] = BLACK
+    for each v in Adj[u]
+      if color[v] != BLACK
+        if w(u, v) < d[v]
+          pi[v] = u
+          d[v] = w(u, v)
+          heapDecreaseKey(H, v, w(u, v))
+実装がややめんどくさい
+
+Single-Source Shortest Path
+プリムのアルゴリズムを一行書き換えるだけ
+あるグラフの始点から各ノードまでの最短距離が一回で求まる
+
+＊ダイクストラのアルゴリズム
+プリムのアルゴリズムにd[u]を足すだけ
+if "d[u] +" w(u, v) < d[v]
+d[v] = "d[u] +" w(u, v)
+uを選ぶとき常に、その時までの経路のコストの合計を取っておく
+[スライド４４]
+常に接続先の重みは変動する
+効率の悪いダイクストラアルゴリズム
+dijkstra(G, w, s)
+  initializeSingleSource(G, s)
+  while true
+    mincost = inf
+    for each i in G
+      if color[i] != BLACK and d[i] < mincost
+        mincost = d[i]
+        u = i
+    if mincost == inf
+      break
+    color[u] = BLACK
+    for each v in Adj[u]
+      if color[v] != BLACK and d[u] + w(u, v) < d[v]
+        pi[v] = u
+        d[v] = d[u] + w(u, v)
+計算量O(|V^2|)
+
+効率の良いダイクストラアルゴリズム(C問題はこっちで)
+dijkstra(G, w, s)
+  initializeSingleSource(G, s)
+  H = buildMinHeap(V)
+  while H is not empty
+    u = H.extractMin()
+    color[u] = BLACK
+    for each v in Adj[u]
+      if color[v] != BLACK
+        if d[u] + w(u, v) < d[v]
+          d[v] = d[u] + w(u, v)
+          color[v] = GRAY
+          hepaDecreaseKey(H, v, d[u] + w(u, v))
